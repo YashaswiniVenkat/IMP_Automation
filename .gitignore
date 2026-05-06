@@ -6,3 +6,7 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Cloned repos (reference only, not part of this project)
+compliagov/
+compliagov-public/
