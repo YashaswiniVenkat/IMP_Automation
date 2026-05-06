@@ -1,0 +1,32 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://hi-doh-public-development.nls.egov.com/register');
+  await page.getByRole('textbox', { name: 'Legal First Name' }).click();
+  await page.getByRole('textbox', { name: 'Legal First Name' }).fill('Yash');
+  await page.getByRole('textbox', { name: 'Legal First Name' }).press('Tab');
+  await page.getByRole('textbox', { name: 'Legal Last Name' }).fill('A');
+  await page.getByRole('textbox', { name: 'Email', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Email', exact: true }).fill('yashaswini.venkat@tylertech.com');
+  await page.getByRole('textbox', { name: 'Email', exact: true }).press('Tab');
+  await page.getByRole('textbox', { name: 'Email', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Email', exact: true }).press('ControlOrMeta+a');
+  await page.getByRole('textbox', { name: 'Email', exact: true }).press('ControlOrMeta+c');
+  await page.getByRole('textbox', { name: 'Confirm Email' }).click();
+  await page.getByRole('textbox', { name: 'Confirm Email' }).fill('yashaswini.venkat@tylertech.com');
+  await page.getByRole('textbox', { name: 'Phone Number' }).click();
+  await page.getByRole('textbox', { name: 'Phone Number' }).fill('(688)885-68658');
+  await page.getByRole('combobox', { name: 'What type of account would' }).click();
+  await page.getByRole('option', { name: 'Business' }).click();
+  await page.getByRole('textbox', { name: 'Business Name' }).click();
+  await page.getByRole('textbox', { name: 'Business Name' }).fill('TEST LLC');
+  await page.getByRole('textbox', { name: 'Tax ID Number' }).click();
+  await page.getByRole('textbox', { name: 'Tax ID Number' }).fill('1222222222');
+  await page.getByRole('textbox', { name: 'Password', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Password', exact: true }).fill('Password1234$');
+  await page.getByRole('textbox', { name: 'Re-enter Password' }).click();
+  await page.getByRole('textbox', { name: 'Re-enter Password' }).fill('Password1234$');
+  await page.getByRole('checkbox', { name: 'Please read and accept Terms' }).check();
+  await page.getByRole('button', { name: 'Register' }).click();
+  await page.getByRole('button', { name: 'Register' }).click();
+});
