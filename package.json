@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Unit Testcases",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "workflow:setup": "node scripts/green-workflow-setup.mjs"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
