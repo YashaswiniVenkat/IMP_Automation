@@ -19,7 +19,9 @@ Interactive CLI to add/update primary and secondary workflows for any market.
 | Script | Description |
 |--------|-------------|
 | `npm run workflow:setup` | Interactive CLI for adding/updating workflows |
-| `scripts/green-workflow-config.mjs` | Programmatic API (import in other scripts) |
+| `npm run payment:setup` | Interactive CLI for fee map and payment provider config |
+| `scripts/green-workflow-config.mjs` | Programmatic API for workflows |
+| `scripts/payment-config.mjs` | Programmatic API for payment setup |
 
 ## Programmatic API
 

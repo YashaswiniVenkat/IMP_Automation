@@ -4,7 +4,10 @@
   "description": "Unit Testcases",
   "main": "index.js",
   "scripts": {
-    "workflow:setup": "node scripts/green-workflow-setup.mjs"
+    "workflow:setup": "node scripts/green-workflow-setup.mjs",
+    "payment:setup": "node scripts/payment-setup.mjs",
+    "service:setup": "node scripts/service-file-setup.mjs",
+    "market:setup": "node scripts/new-market-setup.mjs"
   },
   "keywords": [],
   "author": "",
