@@ -12,7 +12,10 @@ Ask the user which type of configuration they want to set up:
 2. **Secondary Workflow** - Add a secondary workflow (update/renewal) to `coreApplication.json`, `licenses.json`, and `navigation.config.json`
 3. **Payment Setup** - Add fees and payment provider config to `<market>.all.json`
 4. **Service File** - Create a secondary workflow server service file
-5. **New Market** - Set up a brand new market from scratch (build.config, registerConfig, registerForm, install service)
+5. **New Market** - Set up a brand new market from scratch (build.config, registerConfig, registerForm, install service, templates, emails)
+6. **ProTip** - Create or update a ProTip template for a workflow
+7. **Invoice Form** - Configure `invoiceDetailsForm.json` for the Green invoice module
+8. **Reject Alias** - Update reject alias across `applications.json`, `coreApplication.json`, and `navigation.config.json`
 
 ## Step-by-step Process
 
@@ -63,14 +66,54 @@ Ask the user which type of configuration they want to set up:
 8. Apply: Create `.server.service.js` file and register in `workflows.json`
 
 ### For New Market:
-1. Ask: Market code? (e.g. "tx-dps")
-2. Ask: State name? (e.g. "Texas")
-3. Ask: Agency full name? (e.g. "Department of Public Safety")
-4. Ask: Agency short name? (e.g. "DPS")
+1. Ask: Market code? (e.g. "nj-crc")
+2. Ask: State name? (e.g. "New Jersey")
+3. Ask: Agency full name? (e.g. "Cannabis Regulatory Commission")
+4. Ask: Agency short name? (e.g. "CRC")
 5. Ask: Portal title? Footer link? Support email?
 6. Ask: Copy registerForm from existing market or use default?
 7. Ask: Custom states? Counties?
-8. Apply: Create `build.config.json`, `registerConfig.json`, `registerForm.json`, and install service file
+8. Ask: Reject alias? (default: "Rejected" → "Returned for Correction")
+9. Apply: Create `build.config.json`, `registerConfig.json`, `registerForm.json`, and install service file
+10. Apply: Create template directories and files:
+    - `templates/GettingStarted/` - Getting started page content
+    - `templates/Help/` - Help page content
+    - `templates/PrivacyPolicy/` - Privacy policy
+    - `templates/TermsConditions/` - Terms and conditions
+    - `templates/Application/banner.js` - Application banner (optional)
+    - `templates/Application/reviewPageBanner.js` - Review page banner (optional)
+11. Apply: Create email templates at `packages/server/app/templates/emails/`:
+    - `stormpath/<market>/resetPasswordEmail.html`
+    - `stormpath/<market>/resetPasswordByTechSupportEmail.html`
+    - `stormpath/<market>/resetPasswordSuccessEmail.html`
+    - `stormpath/<market>/unlockAccountEmail.html`
+    - `stormpath/<market>/unlockAccountSuccessEmail.html`
+    - `onboarding/<market>/accountVerificationEmail.html`
+    - `onboarding/<market>/addedExistingUserToTenant.html`
+    - `onboarding/<market>/addedNewUserToTenant.html`
+12. Apply: Set reject alias in `applications.json`, `coreApplication.json`, and `navigation.config.json` if non-default
+
+### For ProTip:
+1. Ask: Which market?
+2. Ask: Which workflow? (show list from coreApplication.json)
+3. Ask: ProTip content? (text that appears as a tip/hint on the application page)
+4. Ask: Include any links? (y/n) - If yes, ask for link text and URL
+5. Apply: Create file at `compliagov-public/packages/public-react/src/regional/<market>/templates/ProTip/<workflowKey>.js`
+6. Note: Use `&apos;` for apostrophes and `&quot;` for quotes in React JSX content
+
+### For Invoice Form:
+1. Ask: Which market?
+2. Ask: Provide invoice form JSON from form.io (Invoice component in Misc)
+3. Apply: Update `invoiceDetailsForm.json` in the market's config directory
+4. Note: The Green invoice module uses the "Invoice" component from Misc in form.io
+
+### For Reject Alias:
+1. Ask: Which market?
+2. Ask: What should "Rejected" be displayed as? (e.g. "Returned for Correction", "Returned for Corrections")
+3. Apply: Update all three files:
+   - `applications.json` - `columns[].aliases` and `filters[].aliases`
+   - `coreApplication.json` - `aliases` and `rejectAliasLanguage`
+   - `navigation.config.json` - `rejectAlias` and `rejectAliasLanguage`
 
 ## Important Rules
 
@@ -84,6 +127,10 @@ Ask the user which type of configuration they want to set up:
   - Service files: `compliagov-public/packages/server/app/services/workflows/`
   - Install services: `compliagov-public/packages/server/app/services/installs/`
   - Workflows registry: `compliagov-public/packages/server/app/__tests__/workflows/workflows.json`
+  - ProTip templates: `compliagov-public/packages/public-react/src/regional/<market>/templates/ProTip/`
+  - Email templates (stormpath): `compliagov-public/packages/server/app/templates/emails/stormpath/<market>/`
+  - Email templates (onboarding): `compliagov-public/packages/server/app/templates/emails/onboarding/<market>/`
+  - Invoice form: `compliagov-public/packages/public-react/src/regional/<market>/config/invoiceDetailsForm.json`
 
 ## Configuration Reference
 
@@ -121,6 +168,62 @@ Ask the user which type of configuration they want to set up:
   "filters": [{ "applicationType": "MARKET-TYPE", "formProperties": { "key": "value" } }]
 }
 ```
+
+### ProTip template structure:
+```jsx
+import React from 'react';
+
+const ProTipContent = () => (
+  <div>
+    <p>Your pro tip content here. Use &apos; for apostrophes and &quot; for quotes.</p>
+    <p>For links: <a href="https://example.com" target="_blank" rel="noopener noreferrer">Link Text</a></p>
+  </div>
+);
+
+export default ProTipContent;
+```
+
+### Reject alias - files to update:
+1. `applications.json`:
+```json
+{
+  "columns": [{ "aliases": { "Rejected": "Returned for Correction" } }],
+  "filters": { "common": [{ "aliases": { "Rejected": "Returned for Correction" } }] }
+}
+```
+2. `coreApplication.json`:
+```json
+{
+  "aliases": { "Rejected": "returned for correction" },
+  "rejectAliasLanguage": { "Rejected": "Returned for Correction" }
+}
+```
+3. `navigation.config.json`:
+```json
+{
+  "rejectAlias": "returned for correction",
+  "rejectAliasLanguage": "returned for correction"
+}
+```
+
+### Email template key files:
+- `accountVerificationEmail.html` - Sent when user registers
+- `addedExistingUserToTenant.html` - Sent when existing user is added to tenant
+- `addedNewUserToTenant.html` - Sent when new user is added to tenant
+- `resetPasswordEmail.html` - Password reset request
+- `resetPasswordByTechSupportEmail.html` - Admin-initiated password reset
+- `resetPasswordSuccessEmail.html` - Password reset confirmation
+- `unlockAccountEmail.html` - Account unlock request
+- `unlockAccountSuccessEmail.html` - Account unlock confirmation
+
+### Template directories for new market:
+- `templates/GettingStarted/` - Shown on first login or via Help menu
+- `templates/Help/` - Help page content
+- `templates/PrivacyPolicy/` - Privacy policy page
+- `templates/TermsConditions/` - Terms and conditions page
+- `templates/Application/banner.js` - Banner shown on application pages (optional)
+- `templates/Application/reviewPageBanner.js` - Banner on review page (optional)
+- `templates/ProTip/` - Per-workflow pro tips
 
 ## Programmatic API (scripts/green-workflow-config.mjs)
 
@@ -312,14 +415,14 @@ Creates all required files at once:
 import { setupNewMarket } from './scripts/new-market-config.mjs';
 
 setupNewMarket({
-  market: 'tx-dps',
-  stateName: 'Texas',
-  agencyName: 'Department of Public Safety',
-  agencyShort: 'DPS',
-  portalTitle: 'Texas DPS Portal',        // optional, defaults to "<stateName> <agencyShort> Portal"
-  footerLink: 'https://www.dps.texas.gov/',
-  footerLinkTitle: 'DPS',                 // optional, defaults to agencyShort
-  supportEmail: 'nlssupport-tx-dps@tylertech.com',  // optional, auto-generated
+  market: 'nj-crc',
+  stateName: 'New Jersey',
+  agencyName: 'Cannabis Regulatory Commission',
+  agencyShort: 'CRC',
+  portalTitle: 'New Jersey CRC Portal',   // optional, defaults to "<stateName> <agencyShort> Portal"
+  footerLink: 'https://www.nj.gov/cannabis/',
+  footerLinkTitle: 'CRC',                 // optional, defaults to agencyShort
+  supportEmail: 'nlssupport-nj-crc@tylertech.com',  // optional, auto-generated
   sourceMarket: 'ar-dfa',                 // copies registerForm from this market (or omit for default)
   addCustomStates: true,
   customStates: [{ label: 'Out of Country', value: 'outOfCountry' }],
@@ -333,11 +436,11 @@ setupNewMarket({
 import { createBuildConfig } from './scripts/new-market-config.mjs';
 
 createBuildConfig({
-  market: 'tx-dps',
-  stateName: 'Texas',
-  agencyName: 'Department of Public Safety',
-  agencyShort: 'DPS',
-  footerLink: 'https://www.dps.texas.gov/',
+  market: 'nj-crc',
+  stateName: 'New Jersey',
+  agencyName: 'Cannabis Regulatory Commission',
+  agencyShort: 'CRC',
+  footerLink: 'https://www.nj.gov/cannabis/',
   // Optional: portalTitle, loginCardText, supportEmail, copyrightText, footerLegalItems
 });
 ```
@@ -347,8 +450,8 @@ createBuildConfig({
 import { createRegisterConfig } from './scripts/new-market-config.mjs';
 
 createRegisterConfig({
-  market: 'tx-dps',
-  portalTitle: 'Texas DPS Portal',
+  market: 'nj-crc',
+  portalTitle: 'New Jersey CRC Portal',
   captchaEnabled: true,   // default
   verifyFields: true,     // default
 });
@@ -359,10 +462,10 @@ createRegisterConfig({
 import { createRegisterForm } from './scripts/new-market-config.mjs';
 
 // Copy from existing market:
-createRegisterForm({ market: 'tx-dps', sourceMarket: 'ar-dfa' });
+createRegisterForm({ market: 'nj-crc', sourceMarket: 'ar-dfa' });
 
 // Or use default template (firstName, lastName, email, phone, accountType, password):
-createRegisterForm({ market: 'tx-dps' });
+createRegisterForm({ market: 'nj-crc' });
 ```
 
 ### createInstallService(config)
@@ -370,7 +473,7 @@ createRegisterForm({ market: 'tx-dps' });
 import { createInstallService } from './scripts/new-market-config.mjs';
 
 createInstallService({
-  market: 'tx-dps',
+  market: 'nj-crc',
   addCustomStates: true,
   customStates: [
     { label: 'Out of Country', value: 'outOfCountry' },
@@ -387,7 +490,7 @@ createInstallService({
 import { marketExists } from './scripts/new-market-config.mjs';
 
 marketExists('ar-dfa');  // => true
-marketExists('tx-dps');  // => false (if not yet created)
+marketExists('nj-crc');  // => true
 ```
 
 ### Key Behavior
